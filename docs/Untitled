@@ -1,0 +1,122 @@
+# AI Workflow Auditor
+**Built by Inegbenose Pierre**  
+[Live Demo](#) · [PRD](docs/PRD.md) · [Recruiter Manual](docs/MANUAL.md)
+
+---
+
+## What This Does
+
+The AI Workflow Auditor takes a description of a business's day-to-day workflows and uses Claude AI to produce a structured, prioritised report of automation opportunities — ranked by impact and effort.
+
+Built to demonstrate practical AI integration: a frontend form, an n8n automation layer, the Claude API, and an Airtable database — all connected and working together.
+
+---
+
+## Live Demo
+
+> Coming soon — will be hosted at [inegbenose.xyz/workflow-auditor](https://inegbenose.xyz/workflow-auditor)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Automation engine | n8n |
+| AI model | Anthropic Claude API (claude-sonnet-4-6) |
+| Frontend | HTML + Tailwind CSS |
+| Database | Airtable |
+| Hosting | Render |
+| Version control | Git + GitHub |
+
+---
+
+## How It Works
+
+1. User fills in a form describing their business and up to 5 workflows
+2. Form submission triggers an n8n webhook
+3. n8n sends the data to the Claude API with a structured prompt
+4. Claude returns a JSON report of automation opportunities
+5. n8n formats the report and returns it to the user as a readable HTML page
+6. The audit is logged to Airtable for tracking
+
+---
+
+## Architecture
+```
+[Web Form]
+    ↓ HTTP POST
+[n8n Webhook]
+    ↓
+[Claude API]
+    ↓ JSON
+[n8n — Parse + Format]
+    ↓                    ↓
+[HTML Report]       [Airtable Log]
+```
+
+---
+
+## Project Structure
+```
+ai-workflow-auditor/
+├── docs/
+│   ├── PRD.md          # Product Requirements Document
+│   └── MANUAL.md       # Recruiter manual — how to test the tool
+├── form/
+│   └── index.html      # The workflow input form
+├── .env.example        # Environment variables needed to run
+└── README.md
+```
+
+---
+
+## Running This Locally
+
+### Prerequisites
+- n8n account (cloud or self-hosted)
+- Anthropic API key — [get one here](https://console.anthropic.com)
+- Airtable account and API key
+
+### Setup
+
+1. Clone the repo
+```bash
+git clone https://github.com/Negbepierre/ai-workflow-auditor.git
+cd ai-workflow-auditor
+```
+
+2. Copy the environment variables file
+```bash
+cp .env.example .env
+```
+
+3. Add your API keys to `.env`
+```
+ANTHROPIC_API_KEY=your_key_here
+AIRTABLE_API_KEY=your_key_here
+AIRTABLE_BASE_ID=your_base_id_here
+```
+
+4. Import the n8n workflow (instructions in [MANUAL.md](docs/MANUAL.md))
+
+5. Open `form/index.html` in your browser and run your first audit
+
+---
+
+## Key Concepts Demonstrated
+
+- **LLM integration** — prompting Claude for structured JSON output
+- **Workflow automation** — chaining tools together with n8n
+- **API connectivity** — REST API calls within an automation layer
+- **Structured outputs** — parsing and displaying AI-generated JSON
+- **Database logging** — auto-logging every audit to Airtable
+- **Rapid prototyping** — building a working product quickly with AI tooling
+
+---
+
+## Recruiter Notes
+
+Full instructions for testing the live tool are in [docs/MANUAL.md](docs/MANUAL.md).  
+The full product specification is in [docs/PRD.md](docs/PRD.md).  
+Expected time to run a full audit: under 2 minutes.
