@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Workflow Auditor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen py-12 px-4">
+
+  <div class="max-w-2xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900">AI Workflow Auditor</h1>
+      <p class="text-gray-500 mt-2">Describe your workflows and get a prioritised AI automation report in seconds.</p>
+    </div>
+
+    <!-- Form -->
+    <form id="auditForm" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+        <input type="text" id="businessName" required
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="e.g. Acme Marketing Ltd">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+        <input type="text" id="industry" required
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="e.g. Marketing Agency, Legal, HR, Finance">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Team Size</label>
+        <select id="teamSize"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="1-5">1–5 people</option>
+          <option value="6-20">6–20 people</option>
+          <option value="21-50">21–50 people</option>
+          <option value="50+">50+ people</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Describe your workflows
+          <span class="text-gray-400 font-normal">(be as specific as possible)</span>
+        </label>
+        <p class="text-xs text-gray-400 mb-2">
+          Examples: "We manually copy data from emails into a spreadsheet every morning",
+          "Our team spends 2 hours a week writing the same client update reports"
+        </p>
+        <textarea id="workflows" rows="6" required
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Describe up to 5 workflows your team does regularly..."></textarea>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg text-sm transition-colors">
+        Run Workflow Audit →
+      </button>
+
+    </form>
+
+    <!-- Loading state -->
+    <div id="loading" class="hidden text-center mt-8">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <p class="text-gray-500 mt-3 text-sm">Analysing your workflows with Claude AI...</p>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden mt-8"></div>
+
+  </div>
+
+  <script>
+    const WEBHOOK_URL = 'https://negbepierre.app.n8n.cloud/webhook-test/workflow-audit'
+
+    document.getElementById('auditForm').addEventListener('submit', async function(e) {
+      e.preventDefault()
+
+      const form = document.getElementById('auditForm')
+      const loading = document.getElementById('loading')
+      const results = document.getElementById('results')
+
+      form.classList.add('hidden')
+      loading.classList.remove('hidden')
+
+      const payload = {
+        businessName: document.getElementById('businessName').value,
+        industry: document.getElementById('industry').value,
+        teamSize: document.getElementById('teamSize').value,
+        workflows: document.getElementById('workflows').value
+      }
+
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+
+        loading.classList.add('hidden')
+        results.classList.remove('hidden')
+        results.innerHTML = data.report
+
+      } catch (error) {
+        loading.classList.add('hidden')
+        results.classList.remove('hidden')
+        results.innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <p class="text-red-600 font-medium">Something went wrong. Please try again.</p>
+            <p class="text-red-400 text-sm mt-1">${error.message}</p>
+          </div>`
+      }
+    })
+  </script>
+
+</body>
+</html>
