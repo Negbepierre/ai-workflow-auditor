@@ -88,6 +88,8 @@
 
       form.classList.add('hidden')
       loading.classList.remove('hidden')
+      results.classList.add('hidden')
+      results.innerHTML = ''
 
       const payload = {
         businessName: document.getElementById('businessName').value,
@@ -103,14 +105,25 @@
           body: JSON.stringify(payload)
         })
 
-        const data = await response.json()
+        const text = await response.text()
+        
+        let report = ''
+
+        try {
+          const data = JSON.parse(text)
+          report = data.report || data
+        } catch {
+          report = text
+        }
 
         loading.classList.add('hidden')
+        form.classList.remove('hidden')
         results.classList.remove('hidden')
-        results.innerHTML = data.report
+        results.innerHTML = report
 
       } catch (error) {
         loading.classList.add('hidden')
+        form.classList.remove('hidden')
         results.classList.remove('hidden')
         results.innerHTML = `
           <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
